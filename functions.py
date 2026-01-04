@@ -2,6 +2,7 @@ from openai import OpenAI
 from markdown import markdown
 from weasyprint import HTML
 from dotenv import load_dotenv
+import pdfplumber
 load_dotenv()
 
 def create_prompt(resume_string,jd_string):
@@ -140,8 +141,13 @@ def process_resume(resume,jd_string):
             
     """
      
-    with open(resume,'r',encoding='utf-8') as file:
-        resume_string=file.read()
+    def extract_pdf_text(path):
+        text = ""
+        with pdfplumber.open(path) as pdf:
+            for page in pdf.pages:
+                text += page.extract_text() + "\n"
+        return text
+    resume_string=extract_pdf_text("resumes/resume.pdf")
 
     # create prompt
     prompt = create_prompt(resume_string, jd_string)

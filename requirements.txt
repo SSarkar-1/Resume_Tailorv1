@@ -6,3 +6,4 @@ markdown
 weasyprint
 gradio
 dotenv
+pdfplumber
