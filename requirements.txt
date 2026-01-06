@@ -7,3 +7,5 @@ weasyprint
 gradio
 dotenv
 pdfplumber
+fastapi
+aiofiles

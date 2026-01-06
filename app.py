@@ -1,34 +1,58 @@
 import gradio as gr
+import tempfile
+from pathlib import Path
 
-def export_resume(resume_md):
-    # Here, you would implement the logic to convert the resume markdown to a PDF file and save it
-    # For demonstration, we assume it's saved as 'tailored_resume.pdf'
-    resume_path = "tailored_resume.pdf"
-    
-    # Return the file path for Gradio to handle download
-    return resume_path
+def export_resume(resume_text):
+    # Create a temporary directory
+    tmp_dir = tempfile.mkdtemp()
+    pdf_path = Path(tmp_dir) / "resumes" / "new_resume.pdf"
+
+    # Ensure the parent directory exists before writing the file
+    pdf_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # TODO: Replace this with real Markdown → PDF logic
+    with open(pdf_path, "w", encoding="utf-8") as f:
+        f.write(resume_text)
+
+    # Return file path for download
+    return str(pdf_path)
+
 
 with gr.Blocks() as app:
-    # Create header and app description
+    # create header and app description
     gr.Markdown("# Resume Optimizer 📄")
     gr.Markdown("Upload your resume, paste the job description, and get actionable insights!")
 
-    # Gather inputs
+    # gather inputs
     with gr.Row():
-        resume_input = gr.File(label="Upload Your Resume (.pdf)")
-        jd_input = gr.Textbox(label="Paste the Job Description Here", lines=9, interactive=True, placeholder="Paste job description...")
+        resume_input = gr.File(label="Upload Your Resume (.pdf)")    
+        jd_input = gr.Textbox(
+            label="Paste the Job Description Here",
+            lines=9,
+            interactive=True,
+            placeholder="Paste job description..."
+        )
 
-    # Display output for the tailored resume
-    output_resume_file = gr.File(label="Download Tailored Resume")
+    # display outputs
+    output_resume_md = gr.Markdown(label="New Resume")
 
-    # Button to trigger the resume export
+    # editing results
+    output_resume = gr.Textbox(
+        label="Edit resume and export!",
+        interactive=True,
+        lines=20
+    )
+
     export_button = gr.Button("Export Resume as PDF 🚀")
 
-    # Event binding: When the button is clicked, process the resume and return the file
+    # CHANGE: Markdown → File
+    export_result = gr.File(label="Download Tailored Resume")
+
+    # Event binding
     export_button.click(
-        export_resume,
-        inputs=[resume_input, jd_input],
-        outputs=[output_resume_file]
+        fn=export_resume,
+        inputs=output_resume,
+        outputs=export_result
     )
 
 # Launch the app
