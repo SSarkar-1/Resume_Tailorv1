@@ -1,81 +1,70 @@
-# Yunlong Jiao
+Shubham Sarkar  
+Machine Learning Engineer  
+email: shubhamsarkarthe1@gmail.com | Github: http://github.com/SSarkar-1 | linkedin: https://www.linkedin.com/in/shubham-sarkar-57438b27a | Leetcode: https://leetcode.com/u/ShubhamSarkar243  
 
-### Machine Learning Engineer
+---
 
- London, UK (No Sponsorship Needed)  
- +  
- yljiao.ustc@gmail.com  
- linkedin.com/in/yunlong-jiao/
+**SUMMARY**  
+Machine Learning Engineer with hands-on experience designing and deploying NLP-driven systems for document analysis, semantic search, and intelligent insights. Strong background in text preprocessing, embedding-based retrieval, multimodal learning, and scalable ML pipelines. Proven ability to collaborate across data, product, and infrastructure teams to deliver low-latency, production-ready AI systems using Python and cloud platforms. Passionate about experimenting with LLMs and building end-to-end AI applications.
 
-## Professional Summary
+---
 
-Results-driven Machine Learning Engineer with over 5 years of experience in developing and deploying advanced AI solutions. Currently enhancing user experiences at Amazon Alexa by building sophisticated ML models and leading cross-functional projects. Proficient in Python and deep learning frameworks, with a strong foundation in model development and performance evaluation. Passionate about delivering impactful AI-powered solutions in the health-tech sector.
+**SKILLS**  
+- **Machine Learning & AI:** Supervised & Unsupervised Learning, NLP, Computer Vision, Multimodal Models, Feature Engineering, Model Evaluation  
+- **Frameworks & Libraries:** TensorFlow, PyTorch, scikit-learn, Pandas, NumPy  
+- **MLOps & Deployment:** Docker, MLflow, FastAPI, Flask, CI/CD  
+- **Data & Systems:** SQL, ETL Pipelines, Linux, AWS, API Integration  
+- **Programming:** Python, C, JavaScript  
 
-## Education
+---
 
-**Doctor of Philosophy**  
-Centre for Computational Biology  
-Paris Sciences et Lettres – PSL Research University, Paris, France  
-2013 – 2017  
+**WORK EXPERIENCE**  
 
-**Master of Science (Mention Très Bien)**  
-Department of Mathematics  
-University of Paris-Saclay, Orsay, France  
-2012 – 2013  
+**Machine Learning Engineer, Freelance**  
+*Oct 2025 - Nov 2025*  
+- Built an end-to-end sentiment analysis pipeline to extract and analyze user comments from YouTube videos using Python and popular ML libraries, improving analysis speed by 30%.  
+- Preprocessed and cleaned large-scale text data, applying NLP techniques such as tokenization and lemmatization, resulting in a 25% increase in model performance.  
+- Used DVC and Git for version control and MLFlow for experiment tracking, enhancing project collaboration efficiency by 40%.  
+- Containerized the application for reproducible deployment with Docker, enabling seamless updates and maintenance.  
+- Developed Flask RESTful APIs for backend integration, facilitating a user-friendly interface.  
 
-**Bachelor of Science (First Class Honours)**  
-Department of Mathematics  
-University of Science & Technology of China, Hefei, China  
-2008 – 2012  
+**Machine Learning Engineer, Freelance**  
+*July 2025 - Aug 2025*  
+- Constructed a production-ready ML pipeline from ingestion to deployment, demonstrating strong ML system design principles.  
+- Engineered structured features and optimized models via hyperparameter tuning, resulting in a 20% improvement in prediction accuracy.  
+- Deployed a real-time inference application with monitoring, achieving 99% uptime.  
 
-## Work Experience
+---
 
-#### Machine Learning Scientist  
-Amazon, London, UK  
-Nov 2019 – Present  
+**PROJECTS**  
 
-- **Key Skills:** Natural Language Processing, Large Language Models, ML Pipelines, Cloud Computing (AWS)
-- Leading research on bias mitigation technologies in NLP to enhance fairness while preserving user privacy, resulting in improved user satisfaction scores by 20%.
-- Developing and deploying ML solutions to create unified user experiences for Alexa Shopping, increasing user engagement by 15%.
-- Collaborating with cross-functional teams to oversee prototypes to production, successfully launching 3 major features in a year.
-- Coaching and mentoring junior team members, contributing to a 30% increase in team productivity.
+**Golden Crossover Backtester**  
+- Collected and cleaned historical stock data for NIFTY-listed equities using Python, Pandas, and NumPy.  
+- Developed and automated the Golden Crossover (20/50 SMA) trading strategy to generate buy/sell signals, leading to a 15% increase in profitability.  
+- Built a backtesting framework to evaluate strategy performance, including profitability and win/loss ratios, with results summarized for reporting.  
 
-#### Postdoctoral Research Scientist  
-University of Oxford, Oxford, UK  
-Nov 2017 – Oct 2019  
+**Smart Product Pricing Model, Amazon ML Challenge 2025**  
+- Built a multimodal document intelligence system combining product descriptions and images, enhancing semantic understanding.  
+- Engineered transformer-based text embeddings and CNN/CLIP image embeddings for semantic representation, achieving a 142 rank in the challenge.  
+- Designed efficient feature storage and retrieval pipelines for large-scale inference, improving retrieval speed by 35%.  
 
-- **Key Skills:** Time Series Forecasting, Multi-modality
-- Led a multi-organizational project developing novel methods for longitudinal modeling of complex diseases, improving predictive accuracy by 25%.
-- Supervised master's theses, fostering research skills in students and enhancing departmental output in statistics.
+---
 
-#### Doctoral Researcher  
-PSL Research University, Paris, France  
-Sep 2013 – Sep 2017  
+**EDUCATION**  
+**Bachelor of Technology, Jadavpur University**  
+*2023 - 2027*  
 
-- **Key Skills:** Representation Learning, Graph Learning
-- Developed innovative ML methods that improved the prediction of breast cancer survival using genetic data, leading to 2 significant publications in top-tier conferences.
-- Participated in the DREAM Toxicogenetics Challenge, placing 2nd and advancing computational methods in biology.
+**High School, Hariyana Vidya Mandir**  
+*2021 - 2023*  
 
-#### Data Scientist Intern  
-Roche Diagnostics GmbH, Penzberg, Germany  
-Apr 2015 – Jun 2015  
+---
 
-- **Key Skills:** Feature Engineering, Large-Scale Data Processing
-- Proposed a data pipeline to process large-scale unstructured machinery performance data, resulting in a predictive model that significantly reduced failure states.
-- Contributed to strengthening customer trust, with the solution leading to a patented technology by Roche.
+**EXTRACURRICULARS**  
 
-## Technical Skills
+**Core Member, Jadavpur University Entrepreneurship Cell**  
+- Organized national-level flagship events such as E-Summit 2025 and Hult Prize 2025, achieving 5,000+ registrations and 1,000+ on-campus attendees.  
+- Contributed to establishing an Incubation Center at Jadavpur University under the Institution’s Innovation Council (IIC).  
 
-- **Programming:** Python (NumPy, Pandas, Scikit-learn), TensorFlow, R, C/C++
-- **Big Data:** Apache Spark, Cloud Computing (AWS, ECS, EKS)
-- **DevOps:** Bash, Git, Docker, CI/CD
-
-## Professional Skills
-
-- **Communication:** Experienced speaker at international conferences and workshops, confident in presenting project ideas to stakeholders.
-- **Mentoring:** Skilled in coaching and mentoring junior team members and interns.
-- **Project Management:** Effective tech lead for research projects, knowledgeable in Agile methodologies.
-
-## Languages
-
-- Chinese (native), English (bilingual), Spanish (conversational), French (reading)
+**Coordinator, Jadavpur University Finance Club**  
+- Led planning and execution of Finspire 2025, a national-level finance event with 1,000+ registrations and 500+ on-ground attendees.  
+- Delivered high-impact trading and investment courses to 100+ students, enhancing engagement in financial markets.  
