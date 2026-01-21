@@ -1,16 +1,16 @@
 /* Global styling */
 body {
     font-family: 'Arial', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.4;
     color: #333;
-    margin: 20px;
+    margin: 13px;
 }
 
 /* Header Styling */
 h1, h2, h3 {
     color: #004080;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     font-weight: bold;
 }
 
@@ -30,7 +30,7 @@ h3 {
 
 /* Section spacing */
 section {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 /* Bullet points */
@@ -50,7 +50,7 @@ li::marker {
 
 /* Paragraph spacing */
 p {
-    margin: 5px 0;
+    margin: 3px 0;
 }
 
 /* Inline styles */
@@ -61,7 +61,11 @@ strong {
 
 a {
     color: #0066cc;
-    text-decoration: none;
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #6600cc;
 }
 
 /* Table of contents or subsections */
@@ -70,10 +74,10 @@ a {
     font-weight: bold;
     color: #004080;
     margin-top: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 
 /* Page Margins */
 @page {
-    margin: 2cm;
+    margin: 0.2cm;
 }
