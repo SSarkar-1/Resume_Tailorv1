@@ -3,8 +3,9 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from secrets import token_hex
 import uvicorn
+import json
 import os
-from functions2 import *
+from functions import *
 from markdown import markdown
 from weasyprint import HTML
 
@@ -55,6 +56,10 @@ async def upload_resume(jd_string,file: UploadFile = File(...)):
             response_string = get_resume_response(prompt)
         except Exception as e:
             return f"Failed to generate resume from the AI: {e}", ""
+        finally:
+            # Clean up the uploaded file
+            if os.path.exists(file_path):
+                os.remove(file_path)
         
         new_resume = response_string
 
@@ -73,11 +78,46 @@ async def upload_resume(jd_string,file: UploadFile = File(...)):
             media_type="application/pdf",
             filename="optimized_resume.pdf"
         )
+
+
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
 
+@app.post("/get-ats-score")
+async def get_score(jd_string, file: UploadFile = File(...)):
+    """Upload a resume PDF file and JD"""
+    try:
+        # Validate file type
+        if not file.filename.endswith('.pdf'):
+            raise HTTPException(status_code=400, detail="Only PDF files are accepted")
+        
+        file_ext = file.filename.split(".").pop()
+        file_name = token_hex(10)
+        file_path = f"uploads/{file_name}.{file_ext}"
+        
+        with open(file_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+        
+        def extract_pdf_text(path):
+            text = ""
+            with pdfplumber.open(path) as pdf:
+                for page in pdf.pages:
+                    text += page.extract_text() + "\n"
+            return text
+        resume_string=extract_pdf_text(file_path)
 
+        
+        try:
+            ats_score = ats_scoring(resume_string, jd_string)
+            parsed = json.loads(ats_score)
+            return parsed
+        except Exception as e:
+            return f"Failed to generate resume from the AI: {e}", ""
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
 # @app.post("/optimize-resume")
 # async def optimize_resume(
 #     resume_name: str = Form(..., description="Name of the uploaded resume file"),
