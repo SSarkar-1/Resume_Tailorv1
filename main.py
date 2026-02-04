@@ -1,6 +1,8 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from secrets import token_hex
 import uvicorn
 import json
@@ -24,10 +26,28 @@ app.add_middleware(
 # Ensure directories exist
 os.makedirs("uploads", exist_ok=True)
 os.makedirs("resumes", exist_ok=True)
+os.makedirs("templates", exist_ok=True)
+os.makedirs("static", exist_ok=True)
+
+# Mount static files and configure templates
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
+
+@app.get("/", response_class=HTMLResponse)
+async def landing_page(request: Request):
+    """Landing page inspired by Tsenta marketing site."""
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/solutions", response_class=HTMLResponse)
+async def solutions_page(request: Request):
+    """Solutions page where users upload resume & JD."""
+    return templates.TemplateResponse("solutions.html", {"request": request})
 
 
 @app.post("/get-optimised-resume")
-async def upload_resume(jd_string,file: UploadFile = File(...)):
+async def upload_resume(jd_string, file: UploadFile = File(...)):
     """Upload a resume PDF file and JD"""
     try:
         # Validate file type
@@ -115,6 +135,10 @@ async def get_score(jd_string, file: UploadFile = File(...)):
             return parsed
         except Exception as e:
             return f"Failed to generate resume from the AI: {e}", ""
+        finally:
+            # Clean up the uploaded file
+            if os.path.exists(file_path):
+                os.remove(file_path)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
@@ -233,4 +257,8 @@ async def get_score(jd_string, file: UploadFile = File(...)):
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    # For production, use environment variable PORT (set by hosting platforms)
+    port = int(os.environ.get("PORT", 8000))
+    # Only enable reload in development
+    reload = os.environ.get("ENVIRONMENT", "development") == "development"
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=reload)

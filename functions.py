@@ -3,6 +3,7 @@ from markdown import markdown
 from weasyprint import HTML
 from dotenv import load_dotenv
 import pdfplumber
+
 load_dotenv()
 
 def create_prompt(resume_string,jd_string):
@@ -212,7 +213,7 @@ def ats_scoring(resume_string, jd_string):
 
     """
     model="gpt-4o-mini"
-    temperature=0.7
+    temperature=0.1
     client=OpenAI()
 
     #Make call
