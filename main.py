@@ -23,16 +23,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Get the base directory (where main.py is located)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Ensure directories exist
 os.makedirs("uploads", exist_ok=True)
 os.makedirs("resumes", exist_ok=True)
-os.makedirs("templates", exist_ok=True)
-os.makedirs("static", exist_ok=True)
+templates_dir = os.path.join(BASE_DIR, "templates")
+static_dir = os.path.join(BASE_DIR, "static")
+os.makedirs(templates_dir, exist_ok=True)
+os.makedirs(static_dir, exist_ok=True)
 
-# Mount static files and configure templates
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+# Mount static files and configure templates with absolute paths
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+templates = Jinja2Templates(directory=templates_dir)
 
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for deployment verification"""
+    return {
+        "status": "healthy",
+        "templates_dir": templates_dir,
+        "static_dir": static_dir,
+        "templates_exist": os.path.exists(templates_dir),
+        "static_exist": os.path.exists(static_dir),
+        "templates_files": os.listdir(templates_dir) if os.path.exists(templates_dir) else [],
+        "static_files": os.listdir(static_dir) if os.path.exists(static_dir) else []
+    }
 
 @app.get("/", response_class=HTMLResponse)
 async def landing_page(request: Request):
