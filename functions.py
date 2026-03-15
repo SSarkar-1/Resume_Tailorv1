@@ -23,80 +23,132 @@ def create_prompt(resume_string,jd_string):
         str: A formatted prompt string containing instructions for resume optimization"""
     
     return f"""
-Your objective is to generate a professional, 1-page, compelling resume tailored to the provided job description, maximizing interview chances by integrating best practices in content quality, keyword optimization, measurable achievements, and proper formatting.
+Your objective is to generate a professional, compelling resume content according to the provided job description, maximizing interview chances by integrating best practices in content quality, keyword optimization, measurable achievements, and proper formatting.
 
+Rewrite the content resume to better match the job description and return in json.
+Only improve wording and keyword alignment
 
+IMPORTANT:
+You are NOT formatting a resume.
+You are ONLY returning structured content.
 
-If a tool, framework or skill doesn't match the ones mentioned in the Job description but a similar skill is mentioned, replace the tool/skill/framework with that keyword to match the JD. For example, if Tableau is mentioned but the requirement asks for PowerBI, replace it with PowerBI. Be ethical, don't replace if it is not logical.
-
-
+### OUTPUT RULES (MANDATORY)
+- Output **ONLY valid JSON**
+- No explanations, no markdown, no extra text
 
 Guidelines to Follow:
-
-
-
-Keyword and Skill Optimization:
+1)Keyword and Skill Optimization:
+Rule01:If a tool, framework or skill doesn't match the ones mentioned in the Job description but a similar skill is mentioned, replace the tool/skill/framework with that keyword to match the JD. For example, if Tableau is mentioned but the requirement asks for PowerBI, replace it with PowerBI, if . Be ethical, don't replace if it is not logical.
 
 Analyze the job description and identify relevant keywords (hard and soft skills).
-
-Match at least 80% of the job description’s keywords to align with applicant tracking systems (ATS).
-
+Match as much as possible of the job description’s keywords following the rule above to align with applicant tracking systems (ATS).
 Prioritize industry-relevant hard skills and soft skills in dedicated sections and throughout bullet points.
 
 Incorporate Measurable Metrics:
+Quantify achievements using the XYZ formula if the user has put such quantifications but not formatted it if user has not put anything quantifyable don't do it: Accomplished X, measured by Y, by doing Z.
 
-
-
-Quantify achievements using the XYZ formula: Accomplished X, measured by Y, by doing Z.
-
-Include at least five measurable results that clearly demonstrate impact.
-
-Avoid vague statements; use metrics to highlight value and effectiveness.
-
-
-
-Resume Length and Structure:
-
-Keep the resume between 400-500 words for optimal readability and engagement.
-
-Maintain a clean, organized structure with clear headings and bullet points.
-
-Exceptions for roles requiring longer resumes (e.g., academia, federal jobs, C-suite) should be appropriately handled.
-
+Include as many  measurable results as possible to clearly demonstrate impact.
+Don't use vague statements; use metrics to highlight value and effectiveness.
 
 
 Content Quality and Language:
-
-
-
 Eliminate buzzwords, clichés, and pronouns (e.g., “I,” “me,” “my”).
-
 Use action-oriented, impactful language to emphasize accomplishments over duties.
-
 Replace generic phrases with specific examples that showcase expertise and success.
-
 Focus on selling professional experience, skills, and results, not merely summarizing past roles.
 
 Additional Instructions:
-
-Customize each section (Professional Summary, Experience, Skills, Education) to reflect relevance to the job.
-
-Ensure consistent formatting, professional fonts, and appropriate use of whitespace.
-
+Keyword Optimize and be specific for each section (Professional Summary, Experience, Skills, Education) to reflect relevance to the job.
+Ensure consistent formatting, professional fonts
 Use concise bullet points, each starting with a strong action verb.
 
+Follow this EXACT schema
+
+{{
+  "name": "",
+
+  "contact": {{
+    "email": "",
+    "phone": "",
+    "address": "",
+    "linkedin": "",
+    "github": "",
+    "portfolio": "",
+    "kaggle": "",
+    "leetcode": "",
+    "codeforces": "",
+    "codechef": "",
+    "google_scholar": ""
+  }},
+
+  "summary": "",
+
+  "experience": [
+    {{
+      "title": "",
+      "company": "",
+      "dates": "",
+      "bullets": []
+    }}
+  ],
+
+  "projects": [
+    {{
+      "name": "",
+      "Github link":",
+      "url":""
+      "bullets": []
+    }}
+  ],
+
+  "skills": [],
+
+  "education": [
+    {{
+      "degree": "",
+      "school": "",
+      "year": "",
+      "links":""
+    }}
+  ],
+
+  "certifications": [
+    {{
+      "name": "",
+      "issuer": "",
+      "year": "",
+      "url":""
+    }}
+  ],
+
+  "achievements": [],
+
+  "extracurriculars": [
+    {{
+      "role": "",
+      "organization": "",
+      "bullets": []
+      "url":""
+    }}
+  ],
+
+  "publications": [
+    {{
+      "title": "",
+      "publisher": "",
+      "year": ""
+      "url":""
+    }}
+  ]
+}}
 
 My Resume:
 {resume_string}
 Job Description:
 {jd_string}
 
-
-Generate the resume in markdown format to be further written to a PDF file. Return only the resume content and nothing else.Return raw Markdown only.
-Do NOT wrap the output in ``` or ```markdown.
-
 """
-def get_resume_response(prompt,model="gpt-4o-mini",temperature: float = 0.2):
+def get_resume_response(prompt,model="gpt-4o-mini",temperature: float = 0.1):
     """
     Sends a resume optimization prompt to OpenAI's API and returns the optimized resume response.
 
@@ -122,6 +174,7 @@ def get_resume_response(prompt,model="gpt-4o-mini",temperature: float = 0.2):
 
     #Make call
     response=client.chat.completions.create(model=model,
+                                            response_format={"type": "json_object"},
                                             messages=[
                                                 {'role':'system',"content":'Expert resume writer and reviewer'},
                                                 {'role':'user','content':prompt}
@@ -130,7 +183,7 @@ def get_resume_response(prompt,model="gpt-4o-mini",temperature: float = 0.2):
 
 def ats_scoring(resume_string, jd_string):
     """Gives ats score for the resume highlignting strengths and weaknesses"""
-    prompt=f"""You are a professional Applicant Tracking System (ATS) resume scanner similar to Jobscan.
+    base_prompt=f"""You are a professional Applicant Tracking System (ATS) resume scanner similar to Jobscan.
     Your task is to analyze a resume against a job description and generate a Jobscan-style Match Report.
     Output ONLY valid JSON. Do NOT wrap the JSON in quotes
     INPUTS 
@@ -139,27 +192,31 @@ def ats_scoring(resume_string, jd_string):
     Job Description:
     {jd_string}
   
-
     ANALYSIS INSTRUCTIONS
     Evaluate the resume using ATS logic based on:
-    - Hard skills match
-    - Soft skills match
-    - Keyword alignment
-    - Job title and role relevance
-    - Tools, technologies, and frameworks
-    - Experience relevance
-    - Resume searchability (ATS readability)
-
+    - Searchability: 1)Contact information : is email present ,is phone number present, is name present
+                     2)Professional summary: is it present, presents my abilities clearly and precisely, is it relevant to the job description
+                     3)Section Headings: are Work Experience, Education, Skills, Projects present
+                     4) Does Job title Match
+                     5)Are the dates in chronological order
+                     6) Are there any spelling mistakes in the resume
+                     7) Does the resume have relevant links to all projects and achievements
+    - Hard skills and Soft skills  match
+    - cliches : Does the resume have generic cliche words with no measurable impact.
+    - Experience relevance: does the candidate have the experience required in the JD
+    - Formatting: 1) Is the resume free from any pictures, watermarks
+                  2) Is the resume single column
+                  3) Does the resume have too much color and design (too much means more than two)
+                  4) Does the resume have unessacery sections like extracurriculars, hobbies, interests
     Be strict, realistic, and recruiter-focused.
     Do NOT assume or hallucinate skills or experience not explicitly stated.
 
     ### SCORING
     - Compute a Match Rate between 0 and 100
     - Weighting:
-    - Hard skills & keywords: 45%
-    - Experience & role alignment: 30%
-    - Tools & technologies: 15%
-    - Searchability & formatting: 10%
+    - Hard skills keywords: 40%
+    - Experience & cliches: 10%
+    - Searchability & formatting: 50%
 
     ### OUTPUT RULES (MANDATORY)
     - Output **ONLY valid JSON**
@@ -167,51 +224,98 @@ def ats_scoring(resume_string, jd_string):
     - JSON must strictly follow the schema below
 
     ### REQUIRED JOBSCAN-STYLE JSON FORMAT
-    {{
+    """
+    json_schema='''{
     "match_rate": <integer 0-100>,
     "match_level": "<Poor | Fair | Good | Strong | Excellent>",
-    "hard_skills": {{
+
+    "hard_skills": {
         "matched": ["<skill1>", "<skill2>"],
         "missing": ["<skill1>", "<skill2>"]
-    }},
-    "soft_skills": {{
+    },
+    "soft_skills": {
         "matched": ["<skill1>", "<skill2>"],
         "missing": ["<skill1>", "<skill2>"]
-    }},
-    "keywords": {{
+    },
+    "keywords": {
         "matched": ["<keyword1>", "<keyword2>"],
         "missing": ["<keyword1>", "<keyword2>"]
-    }},
-    "tools_and_technologies": {{
+    },
+    "tools_and_technologies": {
         "matched": ["<tool1>", "<tool2>"],
         "missing": ["<tool1>", "<tool2>"]
-    }},
-    "experience": {{
+    },
+
+    "experience": {
         "job_requirement": "<years or description from JD>",
-        "resume_experience": "<estimated from resume>",
+        "resume_experience": "<summary of experience from resume>",
+        "match_status": "<Low | Partial | Strong>",
+        "relevance_score": <integer 0-100>,
+        "notes": "<short explanation of how well the experience matches the JD>"
+    },
+
+    "job_title_match": {
+        "job_title_in_jd": "<title from JD>",
+        "resume_titles": ["<title1 from resume>", "<title2 from resume>"],
         "match_status": "<Low | Partial | Strong>"
-    }},
-    "job_title_match": {{
-        "job_title_in_jd": "<title>",
-        "resume_titles": ["<title1>", "<title2>"],
-        "match_status": "<Low | Partial | Strong>"
-    }},
-    "searchability": {{
+    },
+
+    "searchability": {
         "score": <integer 0-100>,
+        "contact_information": {
+        "has_name": <true | false>,
+        "has_email": <true | false>,
+        "has_phone": <true | false>
+        },
+        "professional_summary": {
+        "is_present": <true | false>,
+        "is_clear_and_concise": <true | false>,
+        "is_relevant_to_jd": <true | false>
+        },
+        "section_headings": {
+        "has_work_experience": <true | false>,
+        "has_education": <true | false>,
+        "has_skills": <true | false>,
+        "has_projects": <true | false>,
+        "missing_sections": ["<missing_section1>", "<missing_section2>"]
+        },
+        "chronology": {
+        "is_chronological": <true | false>,
+        "issues": ["<issue about date ordering, if any>"]
+        },
+        "spelling_grammar": {
+        "has_spelling_or_grammar_errors": <true | false>,
+        "examples": ["<example error 1>", "<example error 2>"]
+        },
+        "links": {
+        "has_relevant_links": <true | false>,
+        "missing_recommended_links": ["<missing_link_description1>", "<missing_link_description2>"]
+        },
         "issues": [
-        "<missing section headers>",
-        "<poor keyword placement>",
-        "<non-ATS-friendly formatting assumptions>"
+        "<high-level searchability issue 1>",
+        "<high-level searchability issue 2>"
         ]
-    }},
+    },
+
+    "cliches": {
+        "has_cliches": <true | false>,
+        "examples": ["<cliche phrase 1>", "<cliche phrase 2>"]
+    },
+
+    "formatting": {
+        "is_photo_free": <true | false>,
+        "is_single_column": <true | false>,
+        "has_minimal_color_and_design": <true | false>,  // false if more than two strong colors/design elements
+        "unnecessary_sections_present": <true | false>,
+        "unnecessary_sections": ["<section name 1>", "<section name 2>"]
+    },
+
     "recruiter_tips": [
-        "<actionable improvement 1>",
+        "<actionable improvement 1 based on above analysis>",
         "<actionable improvement 2>",
         "<actionable improvement 3>"
-    ]
-    }}
-
-    """
+    ]} '''
+    prompt = base_prompt + "\n" + json_schema
     model="gpt-4o-mini"
     temperature=0.1
     client=OpenAI()

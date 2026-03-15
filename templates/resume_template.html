@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    line-height: 1.4;
+    color: #000;
+    margin: 40px;
+}
+
+h1 {
+    font-size: 20pt;
+    margin-bottom: 5px;
+}
+
+h2 {
+    font-size: 13pt;
+    margin-top: 18px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 2px;
+}
+
+p {
+    margin: 3px 0;
+}
+
+ul {
+    margin: 4px 0 8px 18px;
+}
+
+li {
+    margin-bottom: 3px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.contact {
+    font-size: 10.5pt;
+}
+
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.company {
+    font-weight: bold;
+}
+
+.dates {
+    float: right;
+}
+
+.section {
+    margin-bottom: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>{{ name }}</h1>
+    <div class="contact">
+        {% if contact.email %}{{ contact.email }}{% endif %} {% if contact.phone %}| {{ contact.phone }}{% endif %} {% if contact.address %}| {{ contact.address }}{% endif %}<br>
+        {% if contact.linkedin %}{{ contact.linkedin }}{% endif %} {% if contact.github %}| {{ contact.github }}{% endif %} {% if contact.portfolio %}| {{ contact.portfolio }}{% endif %}
+    </div>
+</div>
+
+<!-- SUMMARY -->
+{% if summary %}
+<div class="section">
+    <h2>Professional Summary</h2>
+    <p>{{ summary }}</p>
+</div>
+{% endif %}
+
+<!-- EXPERIENCE -->
+{% if experience %}
+<div class="section">
+    <h2>Work Experience</h2>
+
+    {% for job in experience %}
+        <div class="job">
+            <div class="job-header">
+                {{ job.title }} — {{ job.company }}
+                <span class="dates">{{ job.dates }}</span>
+            </div>
+
+            <ul>
+                {% for bullet in job.bullets %}
+                <li>{{ bullet }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- PROJECTS -->
+{% if projects %}
+<div class="section">
+    <h2>Projects</h2>
+
+    {% for project in projects %}
+        <p><b>{{ project.name }}</b> {% if project.url %}- <a href="{{ project.url }}">{{ project.url }}</a>{% endif %}</p>
+        <ul>
+            {% for bullet in project.bullets %}
+            <li>{{ bullet }}</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- SKILLS -->
+{% if skills %}
+<div class="section">
+    <h2>Skills</h2>
+    <p>{{ skills | join(", ") }}</p>
+</div>
+{% endif %}
+
+<!-- EDUCATION -->
+{% if education %}
+<div class="section">
+    <h2>Education</h2>
+
+    {% for edu in education %}
+        <p>
+            <b>{{ edu.degree }}</b> — {{ edu.school }}
+            <span class="dates">{{ edu.year }}</span>
+        </p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- CERTIFICATIONS -->
+{% if certifications %}
+<div class="section">
+    <h2>Certifications</h2>
+    <ul>
+        {% for c in certifications %}
+        <li>{{ c.name }} — {{ c.issuer }} {% if c.year %}({{ c.year }}){% endif %} {% if c.url %}- <a href="{{ c.url }}">link</a>{% endif %}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- ACHIEVEMENTS -->
+{% if achievements %}
+<div class="section">
+    <h2>Achievements</h2>
+    <ul>
+        {% for a in achievements %}
+        <li>{{ a }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- EXTRACURRICULARS -->
+{% if extracurriculars %}
+<div class="section">
+    <h2>Extracurriculars</h2>
+    {% for e in extracurriculars %}
+    <p><b>{{ e.role }}</b> — {{ e.organization }} {% if e.url %}- <a href="{{ e.url }}">link</a>{% endif %}</p>
+    <ul>
+        {% for b in e.bullets %}
+        <li>{{ b }}</li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- PUBLICATIONS -->
+{% if publications %}
+<div class="section">
+    <h2>Publications</h2>
+    <ul>
+        {% for p in publications %}
+        <li>{{ p.title }} — {{ p.publisher }} {% if p.year %}({{ p.year }}){% endif %} {% if p.url %}- <a href="{{ p.url }}">link</a>{% endif %}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+</body>
+</html>

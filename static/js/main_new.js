@@ -1,7 +1,6 @@
 // Global state
 let selectedTemplate = null;
 let selectedStyle = null;
-console.log('[main.js] Script loaded');
 
 // Template and Style Options
 const templates = [
@@ -18,15 +17,13 @@ const styles = [
     { id: 3, name: 'Clean', color: '#059669' }
 ];
 
-// Initialization
-function init() {
-    console.log('[main.js] init() called, DOM ready');
+// File upload handling
+document.addEventListener('DOMContentLoaded', function() {
+    // Generate template selection grid
+    generateTemplateGrid();
 
     const fileInput = document.getElementById('resume-file');
     const fileName = document.getElementById('file-name');
-    
-    console.log('[main.js] File input found:', !!fileInput);
-    console.log('[main.js] File name element found:', !!fileName);
     
     if (fileInput && fileName) {
         fileInput.addEventListener('change', function(e) {
@@ -36,48 +33,37 @@ function init() {
                 fileName.textContent = 'No file chosen';
             }
         });
-        console.log('[main.js] File change listener attached');
     }
 
     // Analyze button handler
     const analyzeBtn = document.getElementById('analyze-btn');
-    console.log('[main.js] Analyze button found:', !!analyzeBtn);
     if (analyzeBtn) {
         analyzeBtn.addEventListener('click', handleATSAnalysis);
-        console.log('[main.js] Analyze button listener attached');
     }
 
     // Optimize button handler
     const optimizeBtn = document.getElementById('optimize-btn');
-    console.log('[main.js] Optimize button found:', !!optimizeBtn);
     if (optimizeBtn) {
-        optimizeBtn.addEventListener('click', handleResumeOptimizationClick);
-        console.log('[main.js] Optimize button listener attached - will call handleResumeOptimizationClick');
-    } else {
-        console.error('[main.js] Optimize button with id="optimize-btn" NOT FOUND in DOM');
+        optimizeBtn.addEventListener('click', handleResumeOptimization);
     }
-    
-    console.log('[main.js] init() completed');
-}
 
-if (document.readyState === 'loading') {
-    console.log('[main.js] Waiting for DOMContentLoaded...');
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    // DOM already loaded
-    console.log('[main.js] DOM already ready, running init immediately');
-    init();
-}
+    // Back button handler
+    const backBtn = document.getElementById('back-to-template-btn');
+    if (backBtn) {
+        backBtn.addEventListener('click', goBackToTemplate);
+    }
+
+    // Continue button handler
+    const continueBtn = document.getElementById('continue-to-upload-btn');
+    if (continueBtn) {
+        continueBtn.addEventListener('click', goToUploadForm);
+    }
+});
 
 // Generate template selection grid
 function generateTemplateGrid() {
-    console.log('[main.js] generateTemplateGrid() called');
     const gridContainer = document.querySelector('.template-grid');
-    console.log('[main.js] gridContainer found:', !!gridContainer, gridContainer);
-    if (!gridContainer) {
-        console.warn('[main.js] .template-grid container not found in DOM');
-        return;
-    }
+    if (!gridContainer) return;
 
     templates.forEach(template => {
         styles.forEach(style => {
@@ -95,7 +81,6 @@ function generateTemplateGrid() {
             gridContainer.appendChild(card);
         });
     });
-    console.log('[main.js] Successfully created and appended', gridContainer.children.length, 'template cards');
 }
 
 // Handle template selection
@@ -110,124 +95,32 @@ function selectTemplate(template, style, cardElement) {
     selectedTemplate = template;
     selectedStyle = style;
 
-    // Show the "Proceed with Selected Template" button
-    const proceedBtn = document.getElementById('confirm-template-btn');
-    if (proceedBtn) {
-        proceedBtn.style.display = 'block';
+    // Show selection info and continue button
+    const selectionInfo = document.querySelector('.template-selection-info');
+    if (selectionInfo) {
+        document.getElementById('selected-template-name').textContent = 
+            `${template.name} with ${style.name} Style`;
+        selectionInfo.style.display = 'block';
     }
 }
 
-// Show template modal when Optimize button is clicked
-function handleResumeOptimizationClick() {
-    console.log('[main.js] handleResumeOptimizationClick() called');
-    const fileInput = document.getElementById('resume-file');
-    const jdInput = document.getElementById('job-description');
-
-    console.log('[main.js] Resume file:', fileInput?.value || 'not found');
-    console.log('[main.js] JD input found:', !!jdInput);
-
-    // Validation
-    if (!fileInput.files[0]) {
-        console.warn('[main.js] No resume file selected');
-        alert('Please upload a resume file');
-        return;
-    }
-
-    if (!jdInput.value.trim()) {
-        console.warn('[main.js] No job description provided');
-        alert('Please paste the job description');
-        return;
-    }
-
-    console.log('[main.js] Validation passed, showing template modal');
-    // Show the template modal
-    showTemplateModal();
-}
-
-// Show the template selection modal
-function showTemplateModal() {
-    console.log('[main.js] Showing template modal');
-    const modal = document.getElementById('template-modal');
-    console.log('[main.js] Modal element found:', !!modal, modal);
-    
-    if (!modal) {
-        console.error('[main.js] Template modal element not found!');
-        alert('Template selection UI not available');
-        return;
-    }
-    
-    const gridContainer = modal.querySelector('.template-grid');
-    console.log('[main.js] Grid container found:', !!gridContainer, gridContainer);
-    
-    if (!gridContainer) {
-        console.error('[main.js] Template grid container not found!');
-        alert('Template grid UI not available');
-        return;
-    }
-    
-    // Clear previous grid
-    gridContainer.innerHTML = '';
-    console.log('[main.js] Cleared previous grid');
-    
-    // Generate template options in the modal
-    templates.forEach(template => {
-        styles.forEach(style => {
-            const card = document.createElement('div');
-            card.className = 'template-option';
-            card.dataset.templateId = template.id;
-            card.dataset.styleId = style.id;
-            card.innerHTML = `
-                <div class="template-option-icon">${template.icon}</div>
-                <div class="template-option-name">${template.name}</div>
-                <div class="template-option-style">${style.name} Style</div>
-            `;
-            
-            card.addEventListener('click', () => selectTemplate(template, style, card));
-            gridContainer.appendChild(card);
-        });
-    });
-    
-    console.log('[main.js] Created', gridContainer.children.length, 'template cards');
-    
-    // Reset selection state
-    selectedTemplate = null;
-    selectedStyle = null;
-    const proceedBtn = document.getElementById('confirm-template-btn');
-    if (proceedBtn) {
-        proceedBtn.style.display = 'none';
-    }
-    
-    // Show modal
-    modal.style.display = 'block';
-    console.log('[main.js] Template modal displayed, current display:', modal.style.display);
-}
-
-// Close the template modal
-function closeTemplateModal() {
-    console.log('[main.js] closeTemplateModal() called');
-    const modal = document.getElementById('template-modal');
-    if (modal) {
-        modal.style.display = 'none';
-        console.log('[main.js] Template modal hidden');
-    } else {
-        console.warn('[main.js] Template modal element not found');
-    }
-}
-
-// Proceed with the selected template
-function proceedWithTemplate() {
+// Go to upload form
+function goToUploadForm() {
     if (!selectedTemplate || !selectedStyle) {
         alert('Please select a template first');
         return;
     }
 
-    console.log('[main.js] Proceeding with template:', selectedTemplate.id, 'style:', selectedStyle.id);
-    
-    // Close the modal
-    closeTemplateModal();
-    
-    // Call the resume optimization with the selected template
-    handleResumeOptimization();
+    document.getElementById('template-selection-section').style.display = 'none';
+    document.getElementById('upload-section').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Go back to template selection
+function goBackToTemplate() {
+    document.getElementById('upload-section').style.display = 'none';
+    document.getElementById('template-selection-section').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Handle ATS Score Analysis
@@ -607,14 +500,8 @@ async function handleResumeOptimization() {
 
         if (!response.ok) {
             const serverDetail = await response.text();
-            let message = serverDetail;
-            try {
-                const parsed = JSON.parse(serverDetail);
-                if (parsed?.detail) message = parsed.detail;
-            } catch (e) {
-                // non‑JSON body; leave as-is
-            }
-            throw new Error(message || `HTTP error ${response.status}`);
+            // Surface backend error detail to help debug 500s (e.g., missing API key, bad template id)
+            throw new Error(serverDetail || `HTTP error ${response.status}`);
         }
 
         const blob = await response.blob();

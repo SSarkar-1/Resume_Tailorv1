@@ -65,8 +65,8 @@ async def solutions_page(request: Request):
 
 
 @app.post("/get-optimised-resume")
-async def upload_resume(jd_string, file: UploadFile = File(...)):
-    """Upload a resume PDF file and JD"""
+async def upload_resume(jd_string, file: UploadFile = File(...), template_id: int = 1, style_id: int = 1):
+    """Upload a resume PDF file and JD with selected template and style"""
     try:
         # Validate file type
         if not file.filename.endswith('.pdf'):
@@ -86,31 +86,125 @@ async def upload_resume(jd_string, file: UploadFile = File(...)):
                 for page in pdf.pages:
                     text += page.extract_text() + "\n"
             return text
-        resume_string=extract_pdf_text(file_path)
+
+        resume_string = extract_pdf_text(file_path)
 
         prompt = create_prompt(resume_string, jd_string)
 
         try:
             response_string = get_resume_response(prompt)
         except Exception as e:
-            return f"Failed to generate resume from the AI: {e}", ""
+            # Clean up then return
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            raise HTTPException(status_code=500, detail=f"AI generation error: {e}")
         finally:
             # Clean up the uploaded file
             if os.path.exists(file_path):
                 os.remove(file_path)
+
+        # The AI should return a JSON string following the schema in `functions.create_prompt`.
+        try:
+            parsed = json.loads(response_string)
+        except Exception as e:
+            # Attempt to find JSON inside text in case the model returned extra text
+            try:
+                import re
+                match = re.search(r"\{[\s\S]*\}\s*$", response_string)
+                if match:
+                    parsed = json.loads(match.group(0))
+                else:
+                    raise
+            except Exception:
+                raise HTTPException(status_code=500, detail=f"Failed to parse AI JSON response: {e}")
+
+        if not isinstance(parsed, dict):
+            raise HTTPException(status_code=500, detail="AI response JSON is not an object")
+
+        # Basic validation: ensure some expected keys are present
+        expected_keys = ["name", "contact", "summary", "experience", "skills"]
+        ok = any(k in parsed for k in expected_keys)
+        if not ok:
+            raise HTTPException(status_code=500, detail="AI response JSON missing expected resume fields")
+
+        # Load the selected template
+        template_filename = f"template{template_id}.html"
+        template_path = os.path.join(BASE_DIR, "resume-templates", "resume-templates", "html", template_filename)
         
-        new_resume = response_string
+        try:
+            with open(template_path, 'r', encoding='utf-8') as f:
+                template_content = f.read()
+        except FileNotFoundError:
+            # Fall back to default resume_template if selected not found
+            try:
+                template = templates.env.get_template('resume_template.html')
+                template_content = None
+            except Exception:
+                raise HTTPException(status_code=500, detail=f"Template {template_filename} not found")
+        
+        # Load the selected CSS style
+        style_filename = f"style{style_id}.css"
+        style_path = os.path.join(BASE_DIR, "resume-templates", "resume-templates", "css", style_filename)
+        
+        css_content = ""
+        try:
+            with open(style_path, 'r', encoding='utf-8') as f:
+                css_content = f.read()
+        except FileNotFoundError:
+            # Fall back to default style.css if selected not found
+            default_style_path = os.path.join(BASE_DIR, 'resumes', 'style.css')
+            try:
+                with open(default_style_path, 'r', encoding='utf-8') as f:
+                    css_content = f.read()
+            except FileNotFoundError:
+                pass
+
+        # Prepare context
+        context = {
+            "name": parsed.get("name", ""),
+            "contact": parsed.get("contact", {}),
+            "summary": parsed.get("summary", ""),
+            "experience": parsed.get("experience", []),
+            "projects": parsed.get("projects", []),
+            "skills": parsed.get("skills", []),
+            "education": parsed.get("education", []),
+            "certifications": parsed.get("certifications", []),
+            "achievements": parsed.get("achievements", []),
+            "extracurriculars": parsed.get("extracurriculars", []),
+            "publications": parsed.get("publications", [])
+        }
+
+        # Render template
+        if template_content:
+            # Use loaded template file
+            from jinja2 import Template as Jinja2Template
+            jinja_template = Jinja2Template(template_content)
+            html_content = jinja_template.render(**context)
+            # Replace stylesheet placeholder with inline CSS
+            html_content = html_content.replace('href="STYLESHEET_PLACEHOLDER"', '')
+            # Add CSS inline before closing head
+            html_content = html_content.replace('</head>', f'<style>{css_content}</style></head>')
+        else:
+            # Use default resume_template.html
+            template = templates.env.get_template('resume_template.html')
+            html_content = template.render(**context)
 
         output_pdf_file = "resumes/optimized_resume.pdf"
-        html_content = markdown(new_resume)
-    
+        try:
+            # If using custom template, CSS is already inlined
+            if template_content:
+                HTML(string=html_content).write_pdf(output_pdf_file)
+            else:
+                # If using default, use stylesheet
+                css_path = os.path.join(BASE_DIR, 'resumes', 'style.css')
+                HTML(string=html_content).write_pdf(output_pdf_file, stylesheets=[css_path])
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to render PDF: {e}")
 
-        # Convert HTML to PDF and save (use existing styles filename)
-        HTML(string=html_content).write_pdf(output_pdf_file, stylesheets=['resumes/style.css'])
-        pdf_path = "resumes/optimized_resume.pdf"
+        pdf_path = output_pdf_file
         if not os.path.exists(pdf_path):
-            raise HTTPException(status_code=404, detail="PDF file not found")
-        
+            raise HTTPException(status_code=404, detail="PDF file not found after generation")
+
         return FileResponse(
             pdf_path,
             media_type="application/pdf",
@@ -279,4 +373,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     # Only enable reload in development
     reload = os.environ.get("ENVIRONMENT", "development") == "development"
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=reload)
+    uvicorn.run("main:app", host="127.0.0.1", port=port, reload=reload)
