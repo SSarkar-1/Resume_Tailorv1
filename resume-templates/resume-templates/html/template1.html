@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ name }} - Resume</title>
+    <!-- Stylesheet injected by backend -->
     <link rel="stylesheet" href="STYLESHEET_PLACEHOLDER">
 </head>
 <body>
@@ -11,130 +12,68 @@
         <header class="header">
             <h1>{{ name }}</h1>
             <div class="contact-info">
-                {% if contact.email %}<span>Email: {{ contact.email }}</span>{% endif %}
                 {% if contact.phone %}<span>Phone: {{ contact.phone }}</span>{% endif %}
+                {% if contact.email %}<span>Email: {{ contact.email }}</span>{% endif %}
                 {% if contact.linkedin %}<span>LinkedIn: {{ contact.linkedin }}</span>{% endif %}
                 {% if contact.github %}<span>GitHub: {{ contact.github }}</span>{% endif %}
-                {% if contact.portfolio %}<span>Portfolio: {{ contact.portfolio }}</span>{% endif %}
-                {% if contact.kaggle %}<span>Kaggle: {{ contact.kaggle }}</span>{% endif %}
                 {% if contact.leetcode %}<span>LeetCode: {{ contact.leetcode }}</span>{% endif %}
-                {% if contact.codeforces %}<span>Codeforces: {{ contact.codeforces }}</span>{% endif %}
-                {% if contact.codechef %}<span>CodeChef: {{ contact.codechef }}</span>{% endif %}
-                {% if contact.google_scholar %}<span>Google Scholar: {{ contact.google_scholar }}</span>{% endif %}
+                {% if contact.website %}<span>Website: {{ contact.website }}</span>{% endif %}
             </div>
         </header>
 
         <div class="content">
+
             {% if summary %}
             <section class="section">
-                <h2 class="section-title">Professional Summary</h2>
+                <h2 class="section-title">Summary</h2>
                 <p class="summary">{{ summary }}</p>
             </section>
             {% endif %}
 
-            {% if experience and experience|length > 0 %}
-            <section class="section">
-                <h2 class="section-title">Work Experience</h2>
-                {% for exp in experience %}
-                <div class="experience-item">
-                    <div class="item-header">
-                        <div>
-                            <div class="item-title">{{ exp.title }}</div>
-                            <div class="item-subtitle">{{ exp.company }}</div>
-                        </div>
-                        <div class="item-date">{{ exp.dates }}</div>
-                    </div>
-                    {% if exp.bullets and exp.bullets|length > 0 %}
-                    <ul class="bullets">
-                        {% for bullet in exp.bullets %}
-                        <li>{{ bullet }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </section>
-            {% endif %}
-
-            {% if projects and projects|length > 0 %}
-            <section class="section">
-                <h2 class="section-title">Projects</h2>
-                {% for project in projects %}
-                <div class="project-item">
-                    <div class="item-header">
-                        <div>
-                            <div class="item-title">{{ project.name }}</div>
-                            {% if project.github %}<div class="item-link">GitHub: {{ project.github }}</div>{% endif %}
-                            {% if project.url %}<div class="item-link">Website: {{ project.url }}</div>{% endif %}
-                        </div>
-                    </div>
-                    {% if project.bullets and project.bullets|length > 0 %}
-                    <ul class="bullets">
-                        {% for bullet in project.bullets %}
-                        <li>{{ bullet }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </section>
-            {% endif %}
-
-            {% if skills and skills|length > 0 %}
-            <section class="section">
-                <h2 class="section-title">Technical Skills</h2>
-                <ul class="skills-list">
-                    {% for skill in skills %}
-                    <li>{{ skill }}</li>
-                    {% endfor %}
-                </ul>
-            </section>
-            {% endif %}
-
-            {% if education and education|length > 0 %}
+            {% if education %}
             <section class="section">
                 <h2 class="section-title">Education</h2>
                 {% for edu in education %}
                 <div class="education-item">
                     <div class="item-header">
                         <div>
-                            <div class="item-title">{{ edu.degree }}</div>
-                            <div class="item-subtitle">{{ edu.school }}</div>
-                            {% if edu.links %}<div class="item-link">{{ edu.links }}</div>{% endif %}
+                            <div class="item-title">{{ edu.title or edu.degree or '' }}</div>
+                            <div class="item-subtitle">
+                                {{ edu.institution or edu.school or edu.university or '' }}
+                                {% if edu.location %}&nbsp;&mdash;&nbsp;{{ edu.location }}{% endif %}
+                            </div>
                         </div>
-                        <div class="item-date">{{ edu.year }}</div>
+                        <div class="item-date">
+                            {{ edu.start_date or '' }}{% if edu.start_date and edu.end_date %} &ndash; {% endif %}{{ edu.end_date or '' }}
+                        </div>
                     </div>
+                    {% if edu.score %}<div class="item-link">{{ edu.score }}</div>{% endif %}
                 </div>
                 {% endfor %}
             </section>
             {% endif %}
 
-            {% if achievements and achievements|length > 0 %}
+            {% if experience %}
             <section class="section">
-                <h2 class="section-title">Achievements</h2>
-                <ul class="achievements-list">
-                    {% for achievement in achievements %}
-                    <li>{{ achievement }}</li>
-                    {% endfor %}
-                </ul>
-            </section>
-            {% endif %}
-
-            {% if extracurriculars and extracurriculars|length > 0 %}
-            <section class="section">
-                <h2 class="section-title">Extracurricular Activities</h2>
-                {% for activity in extracurriculars %}
-                <div class="extracurricular-item">
+                <h2 class="section-title">Work Experience</h2>
+                {% for exp in experience %}
+                <div class="experience-item">
                     <div class="item-header">
                         <div>
-                            <div class="item-title">{{ activity.role }}</div>
-                            <div class="item-subtitle">{{ activity.organization }}</div>
-                            {% if activity.url %}<div class="item-link">Website: {{ activity.url }}</div>{% endif %}
+                            <div class="item-title">{{ exp.title or exp.position or '' }}</div>
+                            <div class="item-subtitle">
+                                {{ exp.company or '' }}
+                                {% if exp.location %}&nbsp;&mdash;&nbsp;{{ exp.location }}{% endif %}
+                            </div>
+                        </div>
+                        <div class="item-date">
+                            {{ exp.start_date or '' }}{% if exp.start_date and exp.end_date %} &ndash; {% endif %}{{ exp.end_date or '' }}
                         </div>
                     </div>
-                    {% if activity.bullets and activity.bullets|length > 0 %}
+                    {% set bullets = exp.bullets or exp.details or exp.achievements %}
+                    {% if bullets %}
                     <ul class="bullets">
-                        {% for bullet in activity.bullets %}
+                        {% for bullet in bullets %}
                         <li>{{ bullet }}</li>
                         {% endfor %}
                     </ul>
@@ -144,41 +83,108 @@
             </section>
             {% endif %}
 
-            {% if certifications and certifications|length > 0 %}
+            {% if projects %}
             <section class="section">
-                <h2 class="section-title">Certifications</h2>
-                {% for cert in certifications %}
-                <div class="education-item">
+                <h2 class="section-title">Projects</h2>
+                {% for proj in projects %}
+                <div class="project-item">
                     <div class="item-header">
                         <div>
-                            <div class="item-title">{{ cert.name }}</div>
-                            <div class="item-subtitle">{{ cert.issuer }}</div>
-                            {% if cert.url %}<div class="item-link">Certificate: {{ cert.url }}</div>{% endif %}
+                            <div class="item-title">{{ proj.title or '' }}</div>
+                            <div class="item-link">
+                                {{ proj.stack or proj.technologies or '' }}
+                                {% if proj.date %}&nbsp;|&nbsp;{{ proj.date }}{% endif %}
+                            </div>
                         </div>
-                        <div class="item-date">{{ cert.year }}</div>
                     </div>
+                    {% set bullets = proj.bullets or proj.details or proj.achievements %}
+                    {% if bullets %}
+                    <ul class="bullets">
+                        {% for bullet in bullets %}
+                        <li>{{ bullet }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </section>
             {% endif %}
 
-            {% if publications and publications|length > 0 %}
+            {% if skills %}
             <section class="section">
-                <h2 class="section-title">Publications</h2>
-                {% for pub in publications %}
-                <div class="education-item">
+                <h2 class="section-title">Technical Skills</h2>
+                <ul class="skills-list">
+                    {% for skill in skills %}
+                        {% if skill is string %}
+                            <li>{{ skill }}</li>
+                        {% elif skill.name and skill.items %}
+                            <li><strong>{{ skill.name }}:</strong> {{ skill.items|join(', ') }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+
+            {% if extracurriculars %}
+            <section class="section">
+                <h2 class="section-title">Leadership / Extracurricular</h2>
+                {% for extra in extracurriculars %}
+                <div class="extracurricular-item">
                     <div class="item-header">
                         <div>
-                            <div class="item-title">{{ pub.title }}</div>
-                            <div class="item-subtitle">{{ pub.publisher }}</div>
-                            {% if pub.url %}<div class="item-link">Link: {{ pub.url }}</div>{% endif %}
+                            <div class="item-title">{{ extra.title or '' }}</div>
+                            <div class="item-subtitle">{{ extra.organization or extra.org or '' }}</div>
                         </div>
-                        <div class="item-date">{{ pub.year }}</div>
+                        <div class="item-date">
+                            {{ extra.start_date or '' }}{% if extra.start_date and extra.end_date %} &ndash; {% endif %}{{ extra.end_date or '' }}
+                        </div>
                     </div>
+                    {% set bullets = extra.bullets or extra.details or extra.achievements %}
+                    {% if bullets %}
+                    <ul class="bullets">
+                        {% for bullet in bullets %}
+                        <li>{{ bullet }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </section>
             {% endif %}
+
+            {% if achievements %}
+            <section class="section">
+                <h2 class="section-title">Achievements</h2>
+                <ul class="achievements-list">
+                    {% for ach in achievements %}
+                    <li>{{ ach }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+
+            {% if certifications %}
+            <section class="section">
+                <h2 class="section-title">Certifications</h2>
+                <ul class="achievements-list">
+                    {% for cert in certifications %}
+                    <li>{{ cert }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+
+            {% if publications %}
+            <section class="section">
+                <h2 class="section-title">Publications</h2>
+                <ul class="achievements-list">
+                    {% for pub in publications %}
+                    <li>{{ pub }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+
         </div>
     </div>
 </body>
