@@ -1,31 +1,44 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TailorCV.ai - AI-Powered Resume Tailoring</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <div class="logo">
-                    <span class="logo-text">TailorCV</span>
-                </div>
-                <div class="nav-links">
+    <header class="navbar">       
+
+
+        <div class="logo">
+            <a href="#"><img class="logo-text" src="/static/logo6.png" alt="tailorcv Home"></a>
+        </div>
+
+
+                <nav class="nav-links">
                     <a href="/" class="nav-link active">Home</a>
                     <a href="/solutions" class="nav-link">Solutions</a>
-                    <a href="/solutions" class="nav-link btn-primary-nav">Get Started</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+                    <a href="#">About Us</a>
+                    
+                </nav>
+
+            
+              <div class="nav-actions">
+    <a class="login" href="/login">login</a>
+    <button class="getstarted">
+        <a href="/solutions" class="nav-link btn-primary-nav">Get Started</a>
+    </button>
+</div>
+
+    </header>
+
+
+
 
     <!-- Hero Section -->
     <section class="hero">
@@ -47,6 +60,10 @@
             </div>
         </div>
     </section>
+
+
+
+
 
     <!-- Features Section -->
     <section id="features" class="features">
@@ -104,9 +121,33 @@
                         to any employer or job board.
                     </p>
                 </div>
+
+
+
+                <div class="feature-card">
+    <div class="feature-icon">🧠</div>
+    <h3 class="feature-title">Smart Skill Suggestions</h3>
+    <p class="feature-description">
+        Discover in-demand skills tailored to your target role. Get AI-driven 
+        recommendations to enhance your profile and stay competitive.
+    </p>
+</div>
+
+<div class="feature-card">
+    <div class="feature-icon">🌍</div>
+    <h3 class="feature-title">Job Market Insights</h3>
+    <p class="feature-description">
+        Access real-time insights on industry trends, salary benchmarks, 
+        and hiring patterns to make informed career decisions.
+    </p>
+</div>
             </div>
         </div>
     </section>
+
+
+
+
 
     <!-- How It Works Section -->
     <section class="how-it-works">
@@ -144,6 +185,10 @@
         </div>
     </section>
 
+
+
+
+
     <!-- CTA Section -->
     <section class="cta-section">
         <div class="container">
@@ -157,6 +202,10 @@
             </div>
         </div>
     </section>
+
+
+
+
 
     <!-- Footer -->
     <footer class="footer">
@@ -178,6 +227,6 @@
         </div>
     </footer>
 
-    <script src="/static/js/main.js"></script>
+    <script src="/static/main.js"></script>
 </body>
 </html>

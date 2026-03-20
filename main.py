@@ -64,6 +64,12 @@ async def solutions_page(request: Request):
     return templates.TemplateResponse("solutions.html", {"request": request})
 
 
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request):
+    """Simple login page (frontend only for now)."""
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
 @app.post("/get-optimised-resume")
 async def upload_resume(jd_string, file: UploadFile = File(...), template_id: int = 1, style_id: int = 1):
     """Upload a resume PDF file and JD with selected template and style"""
@@ -373,4 +379,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     # Only enable reload in development
     reload = os.environ.get("ENVIRONMENT", "development") == "development"
-    uvicorn.run("main:app", host="127.0.0.1", port=port, reload=reload)
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=reload)
